@@ -35,10 +35,8 @@ public class DefaultTaskConfigurer {
 		return new TaskHandler();
 	}
 
-
 	@Bean
 	public TaskRepository taskRepository() {
 		return new LoggerTaskRepository();
 	}
-
 }
