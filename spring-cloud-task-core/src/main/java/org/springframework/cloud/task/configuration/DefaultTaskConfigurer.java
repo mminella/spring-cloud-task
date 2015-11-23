@@ -16,28 +16,29 @@
 
 package org.springframework.cloud.task.configuration;
 
+import javax.sql.DataSource;
+
 import org.springframework.cloud.task.repository.LoggerTaskRepository;
 import org.springframework.cloud.task.repository.TaskRepository;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * If no TaskConfigurer is present this configuration will be used.
  * @author Glenn Renfro
  */
-@Configuration
-public class DefaultTaskConfigurer {
+@Component
+public class DefaultTaskConfigurer implements TaskConfigurer{
 
-	@Bean
-	@Scope("prototype")
-	public TaskHandler taskHandler() {
-		return new TaskHandler();
+	private DataSource dataSource;
+
+	public DefaultTaskConfigurer(){
 	}
 
+	public DefaultTaskConfigurer(DataSource dataSource){
+		this.dataSource = dataSource;
+	}
 
-	@Bean
-	public TaskRepository taskRepository() {
+	public TaskRepository getTaskRepository() {
 		return new LoggerTaskRepository();
 	}
 
