@@ -18,29 +18,25 @@ package org.springframework.cloud.task.batch;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.boot.autoconfigure.batch.JobLauncherCommandLineRunner;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.cloud.task.annotation.Task;
 
 /**
  * @author Michael Minella
  */
 @Task
-public class JobLaunchingTask extends JobLauncherCommandLineRunner {
+public class JobLaunchingTask implements CommandLineRunner {
 
 	private Job job;
 
 	private JobLauncher jobLauncher;
 
-	public JobLaunchingTask(JobLauncher jobLauncher, JobExplorer jobExplorer, Job job) {
-		super(jobLauncher, jobExplorer);
-
+	public JobLaunchingTask(JobLauncher jobLauncher, Job job) {
 		this.job = job;
 		this.jobLauncher = jobLauncher;
 	}
 
-	@Override
 	public void run(String... args) throws JobExecutionException {
 		jobLauncher.run(job, new JobParameters());
 	}

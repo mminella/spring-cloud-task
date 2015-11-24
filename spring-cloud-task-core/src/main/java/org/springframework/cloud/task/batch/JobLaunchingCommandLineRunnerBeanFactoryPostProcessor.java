@@ -16,7 +16,6 @@
 package org.springframework.cloud.task.batch;
 
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -44,14 +43,12 @@ public class JobLaunchingCommandLineRunnerBeanFactoryPostProcessor implements Be
 		String[] jobBeanNames = ((DefaultListableBeanFactory) registry).getBeanNamesForType(Job.class);
 
 		String[] jobLauncherBeanNames = ((DefaultListableBeanFactory) registry).getBeanNamesForType(JobLauncher.class);
-		String[] jobExplorerBeanNames = ((DefaultListableBeanFactory) registry).getBeanNamesForType(JobExplorer.class);
 
 		if(jobLauncherBeanNames.length != 1) {
 			throw new RuntimeException("Context must contain exactly one JobLauncher");
 		}
 
 		BeanDefinition jobLauncherBeanDefinition = registry.getBeanDefinition(jobLauncherBeanNames[0]);
-		BeanDefinition jobExplorerBeanDefinition = registry.getBeanDefinition(jobExplorerBeanNames[0]);
 
 		for (String jobBeanName : jobBeanNames) {
 			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
@@ -59,7 +56,6 @@ public class JobLaunchingCommandLineRunnerBeanFactoryPostProcessor implements Be
 			beanDefinition.setBeanClass(JobLaunchingTask.class);
 			ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
 			constructorArgumentValues.addGenericArgumentValue(jobLauncherBeanDefinition);
-			constructorArgumentValues.addGenericArgumentValue(jobExplorerBeanDefinition);
 			constructorArgumentValues.addGenericArgumentValue(registry.getBeanDefinition(jobBeanName));
 
 			registry.registerBeanDefinition(jobBeanName + "Task", beanDefinition);
