@@ -16,16 +16,17 @@
 package org.springframework.cloud.task.batch;
 
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.autoconfigure.batch.JobLauncherCommandLineRunner;
-import org.springframework.context.support.GenericApplicationContext;
 
 /**
  * Creates a task for each job found in the context.
@@ -36,27 +37,32 @@ import org.springframework.context.support.GenericApplicationContext;
 public class JobLaunchingCommandLineRunnerBeanFactoryPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-		String[] bootCommandLineRunnerNames = ((GenericApplicationContext) registry).getBeanNamesForType(JobLauncherCommandLineRunner.class);
+		String[] bootCommandLineRunnerNames = ((DefaultListableBeanFactory) registry).getBeanNamesForType(JobLauncherCommandLineRunner.class);
 
-		System.out.println(">>> THERE ARE " + bootCommandLineRunnerNames.length + " BOOT COMMAND LINE RUNNERS!!!!!");
+		registry.removeBeanDefinition(bootCommandLineRunnerNames[0]);
 
-		String[] jobBeanNames = ((GenericApplicationContext) registry).getBeanNamesForType(Job.class);
+		String[] jobBeanNames = ((DefaultListableBeanFactory) registry).getBeanNamesForType(Job.class);
 
-		String[] jobLauncherBeanNames = ((GenericApplicationContext) registry).getBeanNamesForType(JobLauncher.class);
+		String[] jobLauncherBeanNames = ((DefaultListableBeanFactory) registry).getBeanNamesForType(JobLauncher.class);
+		String[] jobExplorerBeanNames = ((DefaultListableBeanFactory) registry).getBeanNamesForType(JobExplorer.class);
 
-		if(jobBeanNames.length != 1) {
+		if(jobLauncherBeanNames.length != 1) {
 			throw new RuntimeException("Context must contain exactly one JobLauncher");
 		}
 
 		BeanDefinition jobLauncherBeanDefinition = registry.getBeanDefinition(jobLauncherBeanNames[0]);
+		BeanDefinition jobExplorerBeanDefinition = registry.getBeanDefinition(jobExplorerBeanNames[0]);
 
 		for (String jobBeanName : jobBeanNames) {
 			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
 
 			beanDefinition.setBeanClass(JobLaunchingTask.class);
-			MutablePropertyValues propertyValues = beanDefinition.getPropertyValues();
-			propertyValues.add("job", registry.getBeanDefinition(jobBeanName));
-			propertyValues.add("jobLauncher", jobLauncherBeanDefinition);
+			ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
+			constructorArgumentValues.addGenericArgumentValue(jobLauncherBeanDefinition);
+			constructorArgumentValues.addGenericArgumentValue(jobExplorerBeanDefinition);
+			constructorArgumentValues.addGenericArgumentValue(registry.getBeanDefinition(jobBeanName));
+
+			registry.registerBeanDefinition(jobBeanName + "Task", beanDefinition);
 		}
 	}
 

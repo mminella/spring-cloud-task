@@ -26,6 +26,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.task.annotation.EnableTask;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -33,6 +34,7 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootApplication
 @EnableBatchProcessing
+@EnableTask
 public class BatchSample {
 
 	@Autowired

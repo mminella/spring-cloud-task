@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.task.batch.JobLaunchingCommandLineRunnerBeanFactoryPostProcessor;
 import org.springframework.cloud.task.repository.TaskRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -39,6 +40,11 @@ import org.springframework.context.annotation.Scope;
  */
 @Configuration
 public class SimpleTaskConfiguration {
+
+	@Bean
+	public static JobLaunchingCommandLineRunnerBeanFactoryPostProcessor postProcessor() {
+		return new JobLaunchingCommandLineRunnerBeanFactoryPostProcessor();
+	}
 
 	@Bean
 	@Scope("prototype")
@@ -69,7 +75,6 @@ public class SimpleTaskConfiguration {
 	 */
 	@PostConstruct
 	private void initialize()  {
-		System.out.println(">>> I was INitialized");
 		if (initialized) {
 			return;
 		}
