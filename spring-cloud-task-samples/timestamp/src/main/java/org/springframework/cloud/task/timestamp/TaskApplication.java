@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -45,13 +46,13 @@ public class TaskApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(TaskApplication.class, args);
+		System.exit(SpringApplication.exit(SpringApplication.run(TaskApplication.class, args)));
 	}
 
 	/**
 	 * A commandline runner that prints a timestamp.
 	 */
-	public class TimestampTask implements CommandLineRunner {
+	public class TimestampTask implements CommandLineRunner, ExitCodeGenerator {
 		private final org.slf4j.Logger logger = LoggerFactory.getLogger(TimestampTask.class);
 
 		@Autowired
@@ -61,6 +62,12 @@ public class TaskApplication {
 		public void run(String... strings) throws Exception {
 			DateFormat dateFormat = new SimpleDateFormat(config.getFormat());
 			logger.info(dateFormat.format(new Date()));
+			throw new RuntimeException("Awww crap");
+		}
+
+		@Override
+		public int getExitCode() {
+			return 4;
 		}
 	}
 }

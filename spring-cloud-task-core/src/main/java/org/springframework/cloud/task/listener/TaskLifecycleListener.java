@@ -23,6 +23,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.boot.ExitCodeEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.cloud.task.repository.TaskExecution;
 import org.springframework.cloud.task.repository.TaskNameResolver;
@@ -63,6 +64,8 @@ public class TaskLifecycleListener implements ApplicationListener<ApplicationEve
 
 	private TaskNameResolver taskNameResolver;
 
+	private ExitCodeEvent exitCodeEvent;
+
 	/**
 	 * @param taskRepository The repository to record executions in.
 	 */
@@ -93,10 +96,16 @@ public class TaskLifecycleListener implements ApplicationListener<ApplicationEve
 			started = true;
 		}
 		else if(applicationEvent instanceof ContextClosedEvent) {
+			System.out.println(">> ContextClosedEvent received");
 			doTaskEnd();
 		}
 		else if(applicationEvent instanceof ApplicationFailedEvent) {
+			System.out.println(">> ApplicationFailedEvent received");
 			doTaskFailed(((ApplicationFailedEvent) applicationEvent).getException());
+		}
+		else if(applicationEvent instanceof ExitCodeEvent) {
+			System.out.println(">> ExitCodeEvent received");
+			this.exitCodeEvent = exitCodeEvent;
 		}
 	}
 
