@@ -82,7 +82,6 @@ public class TaskExecution {
 						 String errorMessage) {
 
 		Assert.notNull(arguments, "arguments must not be null");
-		Assert.notNull(startTime, "startTime must not be null");
 		this.executionId = executionId;
 		this.exitCode = exitCode;
 		this.taskName = taskName;

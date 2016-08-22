@@ -128,15 +128,21 @@ public class JdbcTaskExecutionDao implements TaskExecutionDao {
 	public TaskExecution createTaskExecution(String taskName,
 			Date startTime, List<String> arguments)  {
 		long taskExecutionId = getNextExecutionId();
-		TaskExecution taskExecution = new TaskExecution(taskExecutionId, null, taskName,
+
+		return startTaskExecution(taskExecutionId, taskName, startTime, arguments);
+	}
+
+	@Override
+	public TaskExecution startTaskExecution(long executionId, String taskName, Date startTime, List<String> arguments) {
+		TaskExecution taskExecution = new TaskExecution(executionId, null, taskName,
 				startTime, null, null, arguments, null);
 
-		Object[] queryParameters = new Object[]{ taskExecutionId, startTime, taskName, new Date()};
+		Object[] queryParameters = new Object[]{ executionId, startTime, taskName, new Date()};
 		jdbcTemplate.update(
 				getQuery(SAVE_TASK_EXECUTION),
 				queryParameters,
 				new int[]{ Types.BIGINT, Types.TIMESTAMP, Types.VARCHAR,  Types.TIMESTAMP });
-		insertTaskArguments(taskExecutionId, arguments);
+		insertTaskArguments(executionId, arguments);
 		return taskExecution;
 	}
 
