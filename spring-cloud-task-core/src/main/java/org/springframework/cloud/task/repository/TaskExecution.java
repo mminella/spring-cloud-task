@@ -87,7 +87,7 @@ public class TaskExecution {
 		this.taskName = taskName;
 		this.exitMessage = exitMessage;
 		this.arguments = new ArrayList<>(arguments);
-		this.startTime = (Date)startTime.clone();
+		this.startTime = (startTime != null) ? (Date)startTime.clone() : null;
 		this.endTime = (endTime != null) ? (Date)endTime.clone() : null;
 		this.errorMessage = errorMessage;
 	}

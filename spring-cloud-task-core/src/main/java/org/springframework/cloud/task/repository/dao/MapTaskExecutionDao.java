@@ -74,6 +74,10 @@ public class MapTaskExecutionDao implements TaskExecutionDao {
 
 	@Override
 	public void completeTaskExecution(long executionId, Integer exitCode, Date endTime, String exitMessage, String errorMessage) {
+		if(!this.taskExecutions.containsKey(executionId)) {
+			throw new IllegalStateException("Invalid TaskExecution, ID " + executionId + " not found.");
+		}
+
 		TaskExecution taskExecution= taskExecutions.get(executionId);
 		taskExecution.setEndTime(endTime);
 		taskExecution.setExitCode(exitCode);
