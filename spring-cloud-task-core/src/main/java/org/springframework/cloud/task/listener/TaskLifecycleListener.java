@@ -206,7 +206,7 @@ public class TaskLifecycleListener implements ApplicationListener<ApplicationEve
 		}
 		else if (this.listenerFailed || this.applicationFailedEvent != null) {
 			Throwable exception = this.listenerException;
-			if (exception != null && exception instanceof TaskExecutionException) {
+			if (exception instanceof TaskExecutionException) {
 				TaskExecutionException taskExecutionException = (TaskExecutionException) exception;
 				if (taskExecutionException.getCause() instanceof InvocationTargetException) {
 					InvocationTargetException invocationTargetException = (InvocationTargetException) taskExecutionException
@@ -217,7 +217,7 @@ public class TaskLifecycleListener implements ApplicationListener<ApplicationEve
 				}
 			}
 
-			if (exception != null && exception instanceof ExitCodeGenerator) {
+			if (exception instanceof ExitCodeGenerator) {
 				exitCode = ((ExitCodeGenerator) exception).getExitCode();
 			}
 			else {
@@ -388,7 +388,6 @@ public class TaskLifecycleListener implements ApplicationListener<ApplicationEve
 
 	@Override
 	public void destroy() throws Exception {
-		this.doTaskEnd();
 	}
 
 }
